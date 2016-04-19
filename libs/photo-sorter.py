@@ -28,15 +28,13 @@ def run_walk_pictures_sorter(source, desctination):
 			m = re.search(r'^.*\.(jpeg|jpg|png|gif|psd)$', picture, flags=re.I)
 			if m:
 				srcfile_path = root + os.path.sep + picture
-				print(srcfile_path)
-
+				mtime = None
 				try:
 					img = Image.open(srcfile_path)
+					mtime = get_minimum_creation_time(img._getexif())
 				except:
 					print ("Skipping '%s' due to exception:\n\r" % (srcfile_path))
 					continue
-
-				mtime = get_minimum_creation_time(img._getexif())
 
 				if mtime is None:
 					ctime = time.ctime(os.path.getctime(root + os.path.sep + picture))
@@ -73,7 +71,6 @@ def run_walk_pictures_sorter(source, desctination):
 						# endwhile
 					flag_save_destinatin = t_flag
 					#endif
-				print (destfile_path+"\n")
 				if flag_save_destinatin:
 					shutil.copyfile(srcfile_path, destfile_path)
 				#endif
