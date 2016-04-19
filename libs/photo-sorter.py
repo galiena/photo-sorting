@@ -24,6 +24,7 @@ def get_minimum_creation_time(exif_data):
 def run_walk_pictures_sorter(source, desctination):
 	for root, subfolders, files in os.walk(source):
 		for picture in files:
+			is_unknown_ctime = False
 			m = re.search(r'^.*\.(jpeg|jpg|png|gif|psd)$', picture, flags=re.I)
 			if m:
 				srcfile_path = root + os.path.sep + picture
@@ -39,10 +40,15 @@ def run_walk_pictures_sorter(source, desctination):
 
 				if mtime is None:
 					ctime = time.ctime(os.path.getctime(root + os.path.sep + picture))
+					is_unknown_ctime = True
 				else:
 					ctime = mtime
 
-				destfile_path = desctination + os.sep + ctime + '.' + m.group(1)
+				destfile_path = desctination + os.sep
+				if is_unknown_ctime:
+					destfile_path += 'unknown' + os.sep
+
+				destfile_path += ctime + '.' + m.group(1)
 			
 				flag_save_destinatin = not os.path.isfile(destfile_path)
 			
@@ -56,7 +62,12 @@ def run_walk_pictures_sorter(source, desctination):
 								t_flag &= True
 							else:
 								t_flag &= False
-							destfile_path = desctination + os.sep + ctime + '_' + str(while_cnt) + '.' + m.group(1)
+
+							destfile_path = desctination + os.sep
+							if is_unknown_ctime:
+								destfile_path += 'unknown' + os.sep
+
+							destfile_path += ctime + '_' + str(while_cnt) + '.' + m.group(1)
 						else:
 							break
 						# endwhile
